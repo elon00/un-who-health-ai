@@ -1,6 +1,5 @@
-import sys
-def run_smoke_test():
-    print("[SMOKE TEST] UN Agency critical path verified.")
-    return True
+"""Local regression smoke entry point; not deployed service availability."""
+from reality_check_harness import test_reality
+
 if __name__ == "__main__":
-    sys.exit(0 if run_smoke_test() else 1)
+    raise SystemExit(0 if test_reality() else 1)
