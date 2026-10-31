@@ -1,4 +1,6 @@
 import json
+import io
+from http.client import BadStatusLine, IncompleteRead
 import threading
 import time
 import unittest
@@ -99,6 +101,23 @@ class VerificationBoundaryTests(unittest.TestCase):
         for block in (None, {}, {"number":"oops","timestamp":"0x1"}):
             with self.subTest(block=block), patch.object(provider,"_rpc",side_effect=["0x1",block]):
                 self.assertFalse(provider.verify_health())
+
+    def test_malformed_http_transport_is_unhealthy(self):
+        provider = QuickNodeProvider(rpc_url="https://example.invalid",chain_id=1)
+        for error in (BadStatusLine("malformed"), IncompleteRead(b"short",100)):
+            with self.subTest(error=type(error).__name__), patch.object(provider,"_rpc",side_effect=error):
+                self.assertFalse(provider.verify_health())
+
+    def test_oversized_rpc_body_is_rejected(self):
+        provider = QuickNodeProvider(rpc_url="https://example.invalid",chain_id=1)
+        with patch("services.quicknode.provider.build_opener") as opener:
+            opener.return_value.open.return_value = io.BytesIO(b"x"*65537)
+            self.assertFalse(provider.verify_health())
+
+    def test_empty_test_discovery_cannot_pass(self):
+        from tests.reality_check_harness import test_reality
+        with patch.object(unittest.defaultTestLoader,"discover",return_value=unittest.TestSuite()):
+            self.assertFalse(test_reality())
 
     def test_real_local_http_probe_checks_chain_and_fresh_head(self):
         class Handler(BaseHTTPRequestHandler):

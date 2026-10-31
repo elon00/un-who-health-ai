@@ -1,5 +1,6 @@
 """Read-only EVM RPC health probe. Other chain runtimes need separate adapters."""
 import json
+from http.client import HTTPException
 import os
 import time
 from urllib.error import HTTPError, URLError
@@ -25,7 +26,10 @@ class QuickNodeProvider:
         body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": method, "params": params}).encode()
         req = Request(self.rpc_url, data=body, headers={"Content-Type": "application/json"}, method="POST")
         with build_opener(NoRedirect()).open(req, timeout=self.timeout) as response:
-            packet = json.load(response)
+            body = response.read(65537)
+            if len(body) > 65536:
+                raise ValueError("RPC response exceeds health-probe limit")
+            packet = json.loads(body)
         if packet.get("jsonrpc") != "2.0" or packet.get("id") != 1 or "error" in packet or "result" not in packet:
             raise ValueError("RPC result unavailable")
         return packet["result"]
@@ -46,6 +50,6 @@ class QuickNodeProvider:
                 return False
             age = time.time() - int(block["timestamp"], 16)
             return -60 <= age <= 300
-        except (HTTPError, URLError, OSError, ValueError, TypeError, KeyError, AttributeError):
+        except (HTTPError, URLError, HTTPException, OSError, ValueError, TypeError, KeyError, AttributeError):
             # No endpoint tokens or exception strings escape through health output.
             return False
