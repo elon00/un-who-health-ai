@@ -1,10 +1,21 @@
 {
-  "repository": "elon00/un-who-health-ai",
-  "agency": "World Health Organization (WHO)",
-  "portfolio": "Global Health & Pandemic Defense",
-  "project": "WHO HealthChain AI",
-  "score": 100,
-  "max_score": 100,
-  "status": "MISSION COMPLETED SUCCESSFULLY",
-  "verification": "100/100 EVIDENCE CERTIFIED"
+  "status": "PARTIAL_PROTOTYPE",
+  "score": null,
+  "maximum": 100,
+  "productionReady": false,
+  "marketReady": "NOT_ASSESSED",
+  "implemented": [
+    "Conway B3/S23 simulation",
+    "Read-only EVM health probe",
+    "Fail-closed payment and signature boundaries"
+  ],
+  "blocked": [
+    "Genuine x402 verification and settlement",
+    "Reviewed classical plus PQC backend",
+    "Deployed product and source match",
+    "Tokenomics and wallet acceptance",
+    "Privacy and domain review",
+    "Operations and customer evidence"
+  ],
+  "limitation": "Local regressions do not establish production or market readiness."
 }

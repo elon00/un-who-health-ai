@@ -27,6 +27,6 @@ pub fn get_metadata() -> UNAgencyState {
         portfolio: "Global Health & Pandemic Defense".to_string(),
         strategy: "Soulbound Verifiable Credential -- International Vaccine Certificates and Clinical Protocol Provenance".to_string(),
         target_chain: "Internet Computer (ICP) + Base L2".to_string(),
-        is_active: true,
+        is_active: false,
     }
 }
